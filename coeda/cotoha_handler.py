@@ -1,67 +1,55 @@
 #!/usr/bin/env python3
 # coding:utf8
 
-
 import requests
 import settings
+
+from auth import CotohaAuth
 
 
 class Tokenizer:
 
-	def __init__(self, _client_id: str, _client_secret: str, _text: str):
+    def __init__(self, _client_id: str, _client_secret: str, _access_token_publish_url: str, _text: str):
 
-		self.text = _text
-		self.response: dict = {}
-		self.tokens: list = []
+        self.text = _text
+        self.response: dict = {}
+        self.tokens: list = []
 
-		self.url = 'https://api.ce-cotoha.com/api/dev/'
-		self.cotoha_setting = {
-			'client_id': _client_id,
-			'client_secret': _client_secret,
-			'access_token': 'https://api.ce-cotoha.com/v1/oauth/accesstokens'
-		}
+        # auth
+        self.auth_info = CotohaAuth(client_id=_client_id, client_secret=_client_secret,
+                                    access_token_publish_url=_access_token_publish_url)
+        self.developer_api_base_url = 'https://api.ce-cotoha.com/api/dev/'
+        self.cotoha_headers = {
+            'Authorization': 'Bearer ' + self.auth_info.access_token,
+            "Content-Type": "application/json;charset=UTF-8",
+        }
 
-		self.token_data = {
-			'grantType': 'client_credentials',
-			'clientId': self.cotoha_setting['client_id'],
-			'clientSecret': self.cotoha_setting['client_secret']
-		}
+    def request_api(self) -> bool:
 
-		self.cotoha_access_token = requests.post(
-			self.cotoha_setting['access_token'],
-			json=self.token_data
-		).json()
+        res = requests.post(
+            self.developer_api_base_url + 'nlp/v1/parse',
+            headers=self.cotoha_headers,
+            json={'sentence': self.text}
+        )
 
-		self.cotoha_headers = {
-			'Authorization': 'Bearer ' + self.cotoha_access_token['access_token']
-		}
+        if res.status_code == 200:
+            self.response = res.json()
+            return True
 
-	def request_api(self) -> bool:
+        else:
+            return False
 
-		res = requests.post(
-			self.url + 'nlp/v1/parse',
-			headers=self.cotoha_headers,
-			json={'sentence': self.text}
-		)
+    def get_tokens(self) -> list:
 
-		if res.status_code == 200:
-			self.response = res.json()
-			return True
-
-		else:
-			return False
-
-	def get_tokens(self) -> list:
-
-		if len(self.response) > 0:
-			return [result['tokens'][0] for result in self.response['result']]
-		else:
-			raise ValueError('Use this method by doing request_api method')
+        if len(self.response) > 0:
+            return [result['tokens'][0] for result in self.response['result']]
+        else:
+            raise ValueError('Use this method by doing request_api method')
 
 
 if __name__ == '__main__':
-	import json
+    import json
 
-	t = Tokenizer(settings.cotoha_client_id, settings.cotoha_client_secret, '明日の六時に渋谷で夕飯を食べる')
-	t.request_api()
-	print(json.dumps(t.response, ensure_ascii=False, indent=2))
+    t = Tokenizer(settings.cotoha_client_id, settings.cotoha_client_secret, 'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
+    t.request_api()
+    print(json.dumps(t.response, ensure_ascii=False, indent=2))
