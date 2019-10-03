@@ -1,4 +1,4 @@
-Sample Module Repository
+coeda - cotoha handler -
 ========================
 
 This simple project is an example repo for Python projects.

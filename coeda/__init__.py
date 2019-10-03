@@ -1,1 +1,1 @@
-from .core import hmm
+from .cotoha_handler import *
