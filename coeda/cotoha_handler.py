@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # coding:utf8
 
+import json
 import requests
 import settings
 
 from auth import CotohaAuth
+from tokenize import Chunk, Token
 
 
 class TokenizerCommon:
@@ -15,13 +17,18 @@ class TokenizerCommon:
         self.headers = _headers
 
         # analyzed data
-        self.response = {}
+        self.parsed = {}
+        self.chunks = []
+        self.tokens = []
 
-    def request_api(self):
-        '''
-        parse text by cotoha server
-        '''
+    def __str__(self):
+        return json.dumps(self.parsed, ensure_ascii=False)
 
+    def __repr__(self):
+        return self.__str__()
+
+    def parse(self):
+        ''' parse text by cotoha server '''
         res = requests.post(
             self.api_base_url + 'nlp/v1/parse',
             headers=self.headers,
@@ -30,18 +37,21 @@ class TokenizerCommon:
 
         if res.status_code == 200:
             try:
-                self.response = res.json()['result']
+                self.parsed = res.json()['result']
+                self.chunks = [Chunk(chunk) for chunk in self.parsed]
+                self.tokens = [Token(token) for chunk in self.parsed for token in chunk['tokens']]
             except KeyError:
-                print('No result is in a response.')
+                print('No result is in a parsed.')
+
         else:
             raise ConnectionError(res.status_code)
 
-    def get_tokens(self) -> list:
+    def get_token_form(self) -> list:
 
-        if len(self.response) > 0:
-            return [result['tokens'][0] for result in self.response['result']]
+        if len(self.tokens) > 0:
+            return [token.form for token in self.tokens]
         else:
-            raise ValueError('Use this method by doing request_api method')
+            raise ValueError('Use this method by doing parse method')
 
 
 class Tokenizer(TokenizerCommon):
@@ -74,14 +84,10 @@ class SimpleTokenizer(TokenizerCommon):
 
         super().__init__(_text, self.api_base_url , self.headers)
 
-        # analysed data
-        self.response: dict = {}
-        self.tokens: list = []
-
 
 if __name__ == '__main__':
-    import json
 
     t = SimpleTokenizer(settings.cotoha_client_id, settings.cotoha_client_secret, 'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
-    t.request_api()
-    print(json.dumps(t.response, ensure_ascii=False, indent=2))
+    t.parse()
+    print(json.dumps(t.parsed, ensure_ascii=False, indent=2))
+    print(t.get_token_form())
