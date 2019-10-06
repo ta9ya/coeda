@@ -5,7 +5,7 @@
 import pytest
 import settings
 
-from auth import CotohaAuth
+from coeda import CotohaAuth
 
 
 def test_auth_normal():

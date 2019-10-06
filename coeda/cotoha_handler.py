@@ -5,8 +5,8 @@ import json
 import requests
 import settings
 
-from auth import CotohaAuth
-from cotoha_tokenize import Chunk, Token
+from coeda import CotohaAuth
+from coeda import Chunk, Token
 
 
 class TokenizerCommon:
