@@ -44,4 +44,7 @@ class CotohaAuth:
 
         response = requests.post(self.access_token_publish_url, headers=headers, json=data)
 
-        return response.json()["access_token"]
+        if response.json().get('access_token'):
+            return response.json()['access_token']
+        else:
+            raise ValueError(response.json())
