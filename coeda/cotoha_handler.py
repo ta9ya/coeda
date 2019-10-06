@@ -6,7 +6,7 @@ import requests
 import settings
 
 from auth import CotohaAuth
-from tokenize import Chunk, Token
+from cotoha_tokenize import Chunk, Token
 
 
 class TokenizerCommon:
