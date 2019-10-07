@@ -39,7 +39,8 @@ class TokenizerCommon:
             try:
                 self.parsed = res.json()['result']
                 self.chunks = [Chunk(chunk) for chunk in self.parsed]
-                self.tokens = [Token(token) for chunk in self.parsed for token in chunk['tokens']]
+                self.tokens = [
+                    Token(token) for chunk in self.parsed for token in chunk['tokens']]
             except KeyError:
                 print('No result is in a parsed.')
 
@@ -63,7 +64,7 @@ class Tokenizer(TokenizerCommon):
 
         self.headers = {
             'Authorization': 'Bearer ' + self.access_token,
-            "Content-Type": "application/json;charset=UTF-8",
+            'Content-Type': 'application/json;charset=UTF-8',
         }
 
         super().__init__(_text, self.api_base_url, self.headers)
@@ -79,15 +80,16 @@ class SimpleTokenizer(TokenizerCommon):
         self.api_base_url = 'https://api.ce-cotoha.com/api/dev/'
         self.headers = {
             'Authorization': 'Bearer ' + self.auth_info.access_token,
-            "Content-Type": "application/json;charset=UTF-8",
+            'Content-Type': 'application/json;charset=UTF-8',
         }
 
-        super().__init__(_text, self.api_base_url , self.headers)
+        super().__init__(_text, self.api_base_url, self.headers)
 
 
 if __name__ == '__main__':
 
-    t = SimpleTokenizer(settings.cotoha_client_id, settings.cotoha_client_secret, 'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
+    t = SimpleTokenizer(settings.cotoha_client_id, settings.cotoha_client_secret,
+                        'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
     t.parse()
     print(json.dumps(t.parsed, ensure_ascii=False, indent=2))
     print(t.get_token_form())

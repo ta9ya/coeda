@@ -42,7 +42,8 @@ class CotohaAuth:
             "clientSecret": self.client_secret
         }
 
-        response = requests.post(self.access_token_publish_url, headers=headers, json=data)
+        response = requests.post(
+            self.access_token_publish_url, headers=headers, json=data)
 
         if response.json().get('access_token'):
             return response.json()['access_token']

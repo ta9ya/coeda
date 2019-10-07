@@ -24,4 +24,5 @@ def test_auth_non_argument():
 
 def test_auth_miss():
     with pytest.raises(ValueError):
-        cotoha_auth = CotohaAuth('a', 'b', settings.cotoha_access_token_publish_url)
+        cotoha_auth = CotohaAuth(
+            'a', 'b', settings.cotoha_access_token_publish_url)
