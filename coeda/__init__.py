@@ -1,3 +1,4 @@
-from .auth import *
-from .cotoha_tokenize import *
-from .cotoha_handler import *
+from .auth import CotohaAuth
+from .cotoha_handler import Tokenizer, SimpleTokenizer
+
+__all__ = ['CotohaAuth', 'Tokenizer', 'SimpleTokenizer']
