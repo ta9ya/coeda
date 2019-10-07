@@ -6,11 +6,12 @@ import requests
 import settings
 
 from coeda import CotohaAuth
-from .cotoha_tokenize import Chunk, Token
+from .cotoha_helper import Chunk, Token
 
 
 class TokenizerCommon:
     def __init__(self, _text: str, _api_base_url: str, _headers: dict):
+
         # input data
         self.text = _text
         self.api_base_url = _api_base_url
@@ -67,7 +68,7 @@ class Tokenizer(TokenizerCommon):
             'Content-Type': 'application/json;charset=UTF-8',
         }
 
-        super().__init__(_text, self.api_base_url, self.headers)
+        super().__init__(_text, _cotoha_auth.api_base_url, self.headers)
 
 
 class SimpleTokenizer(TokenizerCommon):
@@ -77,13 +78,12 @@ class SimpleTokenizer(TokenizerCommon):
         # auth
         self.auth_info = CotohaAuth(client_id=_client_id, client_secret=_client_secret,
                                     access_token_publish_url=_access_token_publish_url)
-        self.api_base_url = 'https://api.ce-cotoha.com/api/dev/'
         self.headers = {
             'Authorization': 'Bearer ' + self.auth_info.access_token,
             'Content-Type': 'application/json;charset=UTF-8',
         }
 
-        super().__init__(_text, self.api_base_url, self.headers)
+        super().__init__(_text, self.auth_info.api_base_url, self.headers)
 
 
 if __name__ == '__main__':

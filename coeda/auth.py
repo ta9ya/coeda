@@ -20,6 +20,7 @@ class CotohaAuth:
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token_publish_url = access_token_publish_url
+        self.api_base_url = 'https://api.ce-cotoha.com/api/dev/'
 
         if access_token is not None:
             self.access_token = access_token
