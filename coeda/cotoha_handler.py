@@ -1,63 +1,95 @@
 #!/usr/bin/env python3
 # coding:utf8
 
-
+import json
 import requests
 import settings
 
+from coeda import CotohaAuth
+from .cotoha_helper import Chunk, Token
 
-class Tokenizer:
 
-	def __init__(self, text):
+class TokenizerCommon:
+    def __init__(self, _text: str, _api_base_url: str, _headers: dict):
 
-		self.text = text
-		self.tokens = []
+        # input data
+        self.text = _text
+        self.api_base_url = _api_base_url
+        self.headers = _headers
 
-		self.url = 'https://api.ce-cotoha.com/api/dev/'
-		self.cotoha_setting = {
-			'client_id': settings.cotoha_client_id,
-			'client_secret': settings.cotoha_client_secret,
-			'access_token': 'https://api.ce-cotoha.com/v1/oauth/accesstokens'
-		}
+        # analyzed data
+        self.parsed = {}
+        self.chunks = []
+        self.tokens = []
 
-		self.token_data = {
-			'grantType': 'client_credentials',
-			'clientId': self.cotoha_setting['client_id'],
-			'clientSecret': self.cotoha_setting['client_secret']
-		}
+    def __str__(self):
+        return json.dumps(self.parsed, ensure_ascii=False)
 
-		self.cotoha_access_token = requests.post(
-			self.cotoha_setting['access_token'],
-			json=self.token_data
-		).json()
+    def __repr__(self):
+        return self.__str__()
 
-		self.cotoha_headers = {
-			'Authorization': 'Bearer ' + self.cotoha_access_token['access_token']
-		}
+    def parse(self):
+        ''' parse text by cotoha server '''
+        res = requests.post(
+            self.api_base_url + 'nlp/v1/parse',
+            headers=self.headers,
+            json={'sentence': self.text}
+        )
 
-	def get_tokens(self):
+        if res.status_code == 200:
+            try:
+                self.parsed = res.json()['result']
+                self.chunks = [Chunk(chunk) for chunk in self.parsed]
+                self.tokens = [
+                    Token(token) for chunk in self.parsed for token in chunk['tokens']]
+            except KeyError:
+                print('No result is in a parsed.')
 
-		res = requests.post(
-			self.url + 'nlp/v1/parse',
-			headers=self.cotoha_headers,
-			json={'sentence': self.text}
-		)
+        else:
+            raise ConnectionError(res.status_code)
 
-		if res.status_code == 200:
-			json_data = res.json()
+    def get_token_form(self) -> list:
 
-			for result in json_data['result']:
-				self.tokens += result['tokens']
+        if len(self.tokens) > 0:
+            return [token.form for token in self.tokens]
+        else:
+            raise ValueError('Use this method by doing parse method')
 
-			return True
 
-		else:
-			return False
+class Tokenizer(TokenizerCommon):
+
+    def __init__(self, _cotoha_auth: CotohaAuth, _text: str):
+
+        self.access_token = _cotoha_auth.access_token
+        self.access_token_publish_url = _cotoha_auth.access_token_publish_url
+
+        self.headers = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Content-Type': 'application/json;charset=UTF-8',
+        }
+
+        super().__init__(_text, _cotoha_auth.api_base_url, self.headers)
+
+
+class SimpleTokenizer(TokenizerCommon):
+
+    def __init__(self, _client_id: str, _client_secret: str, _access_token_publish_url: str, _text: str):
+
+        # auth
+        self.auth_info = CotohaAuth(client_id=_client_id, client_secret=_client_secret,
+                                    access_token_publish_url=_access_token_publish_url)
+        self.headers = {
+            'Authorization': 'Bearer ' + self.auth_info.access_token,
+            'Content-Type': 'application/json;charset=UTF-8',
+        }
+
+        super().__init__(_text, self.auth_info.api_base_url, self.headers)
 
 
 if __name__ == '__main__':
-	import json
 
-	t = Tokenizer('明日の六時に渋谷で夕飯を食べる')
-	print(t.get_tokens())
-	print(json.dumps(t.tokens, ensure_ascii=False, indent=2))
+    t = SimpleTokenizer(settings.cotoha_client_id, settings.cotoha_client_secret,
+                        'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
+    t.parse()
+    print(json.dumps(t.parsed, ensure_ascii=False, indent=2))
+    print(t.get_token_form())

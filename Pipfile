@@ -10,6 +10,7 @@ pytest = "*"
 autopep8 = "*"
 isort = "*"
 tox = "*"
+python-dotenv = "*"
 
 [packages]
 requests = "*"
