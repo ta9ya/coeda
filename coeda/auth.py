@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 # -*- encoding:utf-8 -*-
 
-
-# -*- coding:utf-8 -*-
-
 import requests
 
 
 class CotohaAuth:
 
     def __init__(self, client_id: str, client_secret: str, access_token_publish_url: str, access_token: str = None):
-        '''
-        :param client_id: cotoha client id
-        :param client_secret: cotoha client secret
-        :param access_token_publish_url: cotoha access token url
-        :param access_token:
-        '''
+        """create cotoha auth setting
+        
+        Args:
+            client_id (str): cotoha client id
+            client_secret (str): cotoha client secret
+            access_token_publish_url (str): cotoha access token url
+            access_token (str, optional): cotoha access token. Defaults to None.
+        """
 
         self.client_id = client_id
         self.client_secret = client_secret

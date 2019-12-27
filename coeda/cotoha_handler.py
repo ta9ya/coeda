@@ -29,7 +29,11 @@ class TokenizerCommon:
         return self.__str__()
 
     def parse(self):
-        ''' parse text by cotoha server '''
+        """parse text by cotoha.
+        
+        Raises:
+            ConnectionError: [description]
+        """
         res = requests.post(
             self.api_base_url + 'nlp/v1/parse',
             headers=self.headers,
