@@ -3,7 +3,6 @@
 
 import json
 import requests
-import settings
 
 from coeda import CotohaAuth
 from .cotoha_helper import Chunk, Token
@@ -88,12 +87,3 @@ class SimpleTokenizer(TokenizerCommon):
         }
 
         super().__init__(_text, self.auth_info.api_base_url, self.headers)
-
-
-if __name__ == '__main__':
-
-    t = SimpleTokenizer(settings.cotoha_client_id, settings.cotoha_client_secret,
-                        'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
-    t.parse()
-    print(json.dumps(t.parsed, ensure_ascii=False, indent=2))
-    print(t.get_token_form())
