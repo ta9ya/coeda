@@ -3,6 +3,8 @@
 
 import requests
 
+from .cotoha_handler import Tokenizer
+
 
 class CotohaAuth:
 
@@ -49,3 +51,22 @@ class CotohaAuth:
             return response.json()['access_token']
         else:
             raise ValueError(response.json())
+
+
+def auth(client_id: str, client_secret: str, access_token_publish_url: str):
+    
+    headers = {"Content-Type": "application/json;charset=UTF-8"}
+
+    data = {
+        "grantType": "client_credentials",
+        "clientId": client_id,
+        "clientSecret": client_secret
+    }
+
+    response = requests.post(
+        access_token_publish_url, headers=headers, json=data)
+
+    if response.json().get('access_token'):
+        return Tokenizer(response.json()['access_token'])
+    else:
+        raise ValueError(response.json())
