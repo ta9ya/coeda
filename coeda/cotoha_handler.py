@@ -9,10 +9,10 @@ from .cotoha_helper import Chunk, Token
 
 
 class TokenizerCommon:
-    def __init__(self, _api_base_url: str, _headers: dict):
+    def __init__(self, _api_base_url: str, _headers: dict, _text: str):
 
         # input data
-        # self.text = _text
+        self.text = _text
         self.api_base_url = _api_base_url
         self.headers = _headers
 
@@ -61,20 +61,17 @@ class TokenizerCommon:
 
 class Tokenizer(TokenizerCommon):
 
-    def __init__(self, _access_token: str):
+    access_token: str = ''
+    api_base_url: str = 'https://api.ce-cotoha.com/api/dev/'
 
-        # self.access_token = _cotoha_auth.access_token
-        # self.access_token_publish_url = _cotoha_auth.access_token_publish_url
-        self.access_token = _access_token
-        self.access_token_publish_url = 'https://api.ce-cotoha.com/v1/oauth/accesstokens'
-        self.api_base_url = 'https://api.ce-cotoha.com/api/dev/'
+    def __init__(self, text: str):
 
-        self.headers = {
-            'Authorization': 'Bearer ' + self.access_token,
+        headers = {
+            'Authorization': 'Bearer ' + Tokenizer.access_token,
             'Content-Type': 'application/json;charset=UTF-8',
         }
 
-        super().__init__(self.api_base_url, self.headers)
+        super().__init__(Tokenizer.api_base_url, headers, text)
 
 
 # class SimpleTokenizer(TokenizerCommon):
