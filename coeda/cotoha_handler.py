@@ -3,14 +3,13 @@
 
 import json
 import requests
-import settings
 
-from coeda import CotohaAuth
+# from coeda import CotohaAuth
 from .cotoha_helper import Chunk, Token
 
 
 class TokenizerCommon:
-    def __init__(self, _text: str, _api_base_url: str, _headers: dict):
+    def __init__(self, _api_base_url: str, _headers: dict, _text: str):
 
         # input data
         self.text = _text
@@ -29,7 +28,11 @@ class TokenizerCommon:
         return self.__str__()
 
     def parse(self):
-        ''' parse text by cotoha server '''
+        """parse text by cotoha.
+        
+        Raises:
+            ConnectionError: [description]
+        """
         res = requests.post(
             self.api_base_url + 'nlp/v1/parse',
             headers=self.headers,
@@ -58,38 +61,34 @@ class TokenizerCommon:
 
 class Tokenizer(TokenizerCommon):
 
-    def __init__(self, _cotoha_auth: CotohaAuth, _text: str):
+    access_token: str = ''
+    api_base_url: str = 'https://api.ce-cotoha.com/api/dev/'
 
-        self.access_token = _cotoha_auth.access_token
-        self.access_token_publish_url = _cotoha_auth.access_token_publish_url
+    def __init__(self, text: str):
+        """
+        
+        Args:
+            text (str): analysis text
+        """
 
-        self.headers = {
-            'Authorization': 'Bearer ' + self.access_token,
+        headers = {
+            'Authorization': 'Bearer ' + Tokenizer.access_token,
             'Content-Type': 'application/json;charset=UTF-8',
         }
 
-        super().__init__(_text, _cotoha_auth.api_base_url, self.headers)
+        super().__init__(Tokenizer.api_base_url, headers, text)
 
 
-class SimpleTokenizer(TokenizerCommon):
+# class SimpleTokenizer(TokenizerCommon):
 
-    def __init__(self, _client_id: str, _client_secret: str, _access_token_publish_url: str, _text: str):
+#     def __init__(self, _client_id: str, _client_secret: str, _access_token_publish_url: str, _text: str):
 
-        # auth
-        self.auth_info = CotohaAuth(client_id=_client_id, client_secret=_client_secret,
-                                    access_token_publish_url=_access_token_publish_url)
-        self.headers = {
-            'Authorization': 'Bearer ' + self.auth_info.access_token,
-            'Content-Type': 'application/json;charset=UTF-8',
-        }
+#         # auth
+#         self.auth_info = CotohaAuth(client_id=_client_id, client_secret=_client_secret,
+#                                     access_token_publish_url=_access_token_publish_url)
+#         self.headers = {
+#             'Authorization': 'Bearer ' + self.auth_info.access_token,
+#             'Content-Type': 'application/json;charset=UTF-8',
+#         }
 
-        super().__init__(_text, self.auth_info.api_base_url, self.headers)
-
-
-if __name__ == '__main__':
-
-    t = SimpleTokenizer(settings.cotoha_client_id, settings.cotoha_client_secret,
-                        'https://api.ce-cotoha.com/v1/oauth/accesstokens', '明日の六時に渋谷で夕飯を食べる')
-    t.parse()
-    print(json.dumps(t.parsed, ensure_ascii=False, indent=2))
-    print(t.get_token_form())
+#         super().__init__(_text, self.auth_info.api_base_url, self.headers)

@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 # -*- encoding:utf-8 -*-
 
-
-# -*- coding:utf-8 -*-
-
 import requests
+
+from .cotoha_handler import Tokenizer
 
 
 class CotohaAuth:
 
     def __init__(self, client_id: str, client_secret: str, access_token_publish_url: str, access_token: str = None):
-        '''
-        :param client_id: cotoha client id
-        :param client_secret: cotoha client secret
-        :param access_token_publish_url: cotoha access token url
-        :param access_token:
-        '''
+        """create cotoha auth setting
+        
+        Args:
+            client_id (str): cotoha client id
+            client_secret (str): cotoha client secret
+            access_token_publish_url (str): cotoha access token url
+            access_token (str, optional): cotoha access token. Defaults to None.
+        """
 
         self.client_id = client_id
         self.client_secret = client_secret
@@ -47,6 +48,42 @@ class CotohaAuth:
             self.access_token_publish_url, headers=headers, json=data)
 
         if response.json().get('access_token'):
-            return response.json()['access_token']
+            Tokenizer.access_token = response.json()['access_token']
+            return Tokenizer
         else:
             raise ValueError(response.json())
+
+
+def auth(_client_id: str, _client_secret: str, _access_token_publish_url: str):
+    """[summary]
+    
+    Args:
+        _client_id (str)
+        _client_secret (str)
+        _access_token_publish_url (str)
+    
+    Raises:
+        ValueError: fail to getting access token
+    
+    Returns:
+        Tokenizer (class): tokenizer class
+    """
+    
+    headers = {"Content-Type": "application/json;charset=UTF-8"}
+
+    data = {
+        "grantType": "client_credentials",
+        "clientId": _client_id,
+        "clientSecret": _client_secret
+    }
+
+    response = requests.post(
+        _access_token_publish_url, headers=headers, json=data)
+
+    if response.json().get('access_token'):
+
+        Tokenizer.access_token = response.json()['access_token']
+
+        return Tokenizer
+    else:
+        raise ValueError(response.json())
