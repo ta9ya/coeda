@@ -3,6 +3,8 @@
 
 import requests
 
+from .cotoha_handler import Tokenizer
+
 
 class CotohaAuth:
 
@@ -46,6 +48,42 @@ class CotohaAuth:
             self.access_token_publish_url, headers=headers, json=data)
 
         if response.json().get('access_token'):
-            return response.json()['access_token']
+            Tokenizer.access_token = response.json()['access_token']
+            return Tokenizer
         else:
             raise ValueError(response.json())
+
+
+def auth(_client_id: str, _client_secret: str, _access_token_publish_url: str):
+    """[summary]
+    
+    Args:
+        _client_id (str)
+        _client_secret (str)
+        _access_token_publish_url (str)
+    
+    Raises:
+        ValueError: fail to getting access token
+    
+    Returns:
+        Tokenizer (class): tokenizer class
+    """
+    
+    headers = {"Content-Type": "application/json;charset=UTF-8"}
+
+    data = {
+        "grantType": "client_credentials",
+        "clientId": _client_id,
+        "clientSecret": _client_secret
+    }
+
+    response = requests.post(
+        _access_token_publish_url, headers=headers, json=data)
+
+    if response.json().get('access_token'):
+
+        Tokenizer.access_token = response.json()['access_token']
+
+        return Tokenizer
+    else:
+        raise ValueError(response.json())
