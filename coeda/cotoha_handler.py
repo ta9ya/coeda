@@ -65,6 +65,11 @@ class Tokenizer(TokenizerCommon):
     api_base_url: str = 'https://api.ce-cotoha.com/api/dev/'
 
     def __init__(self, text: str):
+        """
+        
+        Args:
+            text (str): analysis text
+        """
 
         headers = {
             'Authorization': 'Bearer ' + Tokenizer.access_token,

@@ -54,14 +54,27 @@ class CotohaAuth:
             raise ValueError(response.json())
 
 
-def auth(client_id: str, client_secret: str, _access_token_publish_url: str):
+def auth(_client_id: str, _client_secret: str, _access_token_publish_url: str):
+    """[summary]
+    
+    Args:
+        _client_id (str)
+        _client_secret (str)
+        _access_token_publish_url (str)
+    
+    Raises:
+        ValueError: fail to getting access token
+    
+    Returns:
+        Tokenizer (class): tokenizer class
+    """
     
     headers = {"Content-Type": "application/json;charset=UTF-8"}
 
     data = {
         "grantType": "client_credentials",
-        "clientId": client_id,
-        "clientSecret": client_secret
+        "clientId": _client_id,
+        "clientSecret": _client_secret
     }
 
     response = requests.post(
