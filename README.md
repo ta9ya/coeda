@@ -11,4 +11,10 @@
 
 ## How to use
 
-Comming soon
+```python
+import coeda
+
+nlp = coeda.auth(client_id, client_secret, access_token_publish_url)
+
+doc = nlp('今日はいい天気だ')
+```
