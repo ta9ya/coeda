@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/Users/iwasa/.local/share/virtualenvs/coeda-mvhRWRXq/bin/python",
+    "python.pythonPath": ".venv/bin/python",
     "python.testing.pytestArgs": [],
     "python.testing.pytestEnabled": true,
 
@@ -14,9 +14,18 @@
         "--max-line-length=150",
         "--max-complexity=20"
     ],
+    "python.linting.mypyEnabled": true,
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Args": [
-        "--aggressive", "--aggressive",
+        "--aggressive",
+        "--indent-size=4"
     ],
     "autoDocstring.docstringFormat": "google",
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true, // 保存時に自動整形を行う
+        "editor.formatOnPaste": false, // ペースト時に自動整形を行わない
+        "editor.formatOnType": false,
+            
+    }
 }

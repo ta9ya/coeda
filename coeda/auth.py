@@ -10,7 +10,7 @@ class CotohaAuth:
 
     def __init__(self, client_id: str, client_secret: str, access_token_publish_url: str, access_token: str = None):
         """create cotoha auth setting
-        
+
         Args:
             client_id (str): cotoha client id
             client_secret (str): cotoha client secret
@@ -56,19 +56,19 @@ class CotohaAuth:
 
 def auth(_client_id: str, _client_secret: str, _access_token_publish_url: str):
     """[summary]
-    
+
     Args:
         _client_id (str)
         _client_secret (str)
         _access_token_publish_url (str)
-    
+
     Raises:
         ValueError: fail to getting access token
-    
+
     Returns:
         Tokenizer (class): tokenizer class
     """
-    
+
     headers = {"Content-Type": "application/json;charset=UTF-8"}
 
     data = {

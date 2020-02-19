@@ -17,6 +17,3 @@ cotoha_client_id = os.environ.get('cotoha_client_id')
 cotoha_client_secret = os.environ.get('cotoha_client_secret')
 cotoha_access_token_publish_url = os.environ.get(
     'cotoha_access_token_publish_url')
-
-
-# kintone = KintoneHandler(_KINTONE_TOKEN=kintone_token, app=5)
